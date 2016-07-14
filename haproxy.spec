@@ -134,6 +134,9 @@ setsebool -P haproxy_connect_any 0
 %{_datadir}/selinux/packages/haproxy/haproxy.pp
 
 %changelog
+* Thur July 14 2016 Brian Lieberman 
+- updated to 1.6.6, add selinux policy, add static linked openssl build 
+
 * Tue May 10 2016 Willy Tarreau <w@1wt.eu>
 - updated to 1.6.5
 
