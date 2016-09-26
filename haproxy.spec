@@ -145,6 +145,7 @@ setsebool -P haproxy_connect_any 0
 %changelog
 * Fri Sep 23 2016 Dann Washko
 - Updated to 1.6.9, added systemd wrapper and service script.
+- Leaving init.d scripts in for now. But they should probably come out at some point.
 
 * Thu Jul 14 2016 Brian Lieberman 
 - updated to 1.6.6, add selinux policy, add static linked openssl build 
