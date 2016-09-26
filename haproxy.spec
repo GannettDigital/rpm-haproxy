@@ -6,7 +6,7 @@
 # wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev26.tar.gz -O ~/rpmbuild/SOURCES/haproxy-1.5-dev26.tar.gz
 # rpmbuild -bb  ~/rpmbuild/SPECS/haproxy.spec
 
-%define version 1.6.6
+%define version 1.6.9
 %define release 1
 
 Summary: HA-Proxy is a TCP/HTTP reverse proxy for high availability environments
@@ -16,7 +16,7 @@ Release: %{release}%{?dist}.gd
 License: GPL
 Group: System Environment/Daemons
 URL: http://haproxy.1wt.eu/
-Source0: http://haproxy.1wt.eu/download/1.6/src/devel/%{name}-%{version}.tar.gz
+Source0: http://haproxy.1wt.eu/download/1.6/src/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: pcre-devel make gcc openssl-devel
 Requires: /sbin/chkconfig, /sbin/service
@@ -59,6 +59,8 @@ cp -R -p ../../SPECS/haproxy.te .
 checkmodule -M -m -o haproxy.mod haproxy.te
 semodule_package -o haproxy.pp -m haproxy.mod
 
+cd contrib/systemd; make PREFIX=/usr
+
 
 %install
 [ "%{buildroot}" != "/" ] && %{__rm} -rf %{buildroot}
@@ -74,7 +76,11 @@ mkdir -p %{buildroot}/usr/share/haproxy
 cp examples/errorfiles/503.http %{buildroot}/etc/haproxy/errors/503.http
 cp examples/auth.cfg %{buildroot}/etc/haproxy/haproxy.cfg
 
+mkdir -p %{buildroot}/etc/systemd/system
+cp contrib/systemd/haproxy.service %{buildroot}/etc/systemd/system
+
 %{__install} -s %{name} %{buildroot}%{_sbindir}/
+%{__install} -s %{name}-systemd-wrapper %{buildroot}%{_sbindir}/
 %{__install} -c -m 755 examples/%{name}.init %{buildroot}%{_sysconfdir}/rc.d/init.d/%{name}
 %{__install} -c -m 755 doc/%{name}.1 %{buildroot}%{_mandir}/man1/
 
@@ -108,6 +114,7 @@ semodule -r haproxy 2>/dev/null || :
 %postun
 if [ "$1" -ge "1" ]; then
   /sbin/service %{name} condrestart >/dev/null 2>&1 || :
+  /bin/systemctl daemon-reload 
 fi
 
 %postun policy
@@ -118,12 +125,14 @@ setsebool -P haproxy_connect_any 0
 /usr/share/haproxy
 /etc/haproxy/errors/503.http
 /etc/haproxy/haproxy.cfg
+/etc/systemd/system/haproxy.service
 
 %defattr(-,root,root)
 %doc CHANGELOG README doc/architecture.txt doc/configuration.txt doc/intro.txt doc/management.txt doc/proxy-protocol.txt
 %doc %{_mandir}/man1/%{name}.1*
 
 %attr(0755,root,root) %{_sbindir}/%{name}
+%attr(0755,root,root) %{_sbindir}/%{name}-systemd-wrapper
 %dir %{_sysconfdir}/%{name}
 %attr(0755,root,root) %config %{_sysconfdir}/rc.d/init.d/%{name}
 
@@ -134,6 +143,10 @@ setsebool -P haproxy_connect_any 0
 %{_datadir}/selinux/packages/haproxy/haproxy.pp
 
 %changelog
+* Fri Sep 23 2016 Dann Washko
+- Updated to 1.6.9, added systemd wrapper and service script.
+- Leaving init.d scripts in for now. But they should probably come out at some point.
+
 * Thu Jul 14 2016 Brian Lieberman 
 - updated to 1.6.6, add selinux policy, add static linked openssl build 
 
