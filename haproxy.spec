@@ -6,7 +6,7 @@
 # wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev26.tar.gz -O ~/rpmbuild/SOURCES/haproxy-1.5-dev26.tar.gz
 # rpmbuild -bb  ~/rpmbuild/SPECS/haproxy.spec
 
-%define version 1.6.9
+%define version 1.7.1
 %define release 1
 
 Summary: HA-Proxy is a TCP/HTTP reverse proxy for high availability environments
@@ -16,7 +16,7 @@ Release: %{release}%{?dist}.gd
 License: GPL
 Group: System Environment/Daemons
 URL: http://haproxy.1wt.eu/
-Source0: http://haproxy.1wt.eu/download/1.6/src/%{name}-%{version}.tar.gz
+Source0: http://www.haproxy.org/download/1.7/src/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: pcre-devel make gcc openssl-devel
 Requires: /sbin/chkconfig, /sbin/service
@@ -114,7 +114,7 @@ semodule -r haproxy 2>/dev/null || :
 %postun
 if [ "$1" -ge "1" ]; then
   /sbin/service %{name} condrestart >/dev/null 2>&1 || :
-  /bin/systemctl daemon-reload 
+  /bin/systemctl daemon-reload
 fi
 
 %postun policy
@@ -143,12 +143,15 @@ setsebool -P haproxy_connect_any 0
 %{_datadir}/selinux/packages/haproxy/haproxy.pp
 
 %changelog
+* Wed Dec 14 2016 Marcelo Mandolesi
+- Updated to 1.7.1
+
 * Fri Sep 23 2016 Dann Washko
 - Updated to 1.6.9, added systemd wrapper and service script.
 - Leaving init.d scripts in for now. But they should probably come out at some point.
 
-* Thu Jul 14 2016 Brian Lieberman 
-- updated to 1.6.6, add selinux policy, add static linked openssl build 
+* Thu Jul 14 2016 Brian Lieberman
+- updated to 1.6.6, add selinux policy, add static linked openssl build
 
 * Tue May 10 2016 Willy Tarreau <w@1wt.eu>
 - updated to 1.6.5
