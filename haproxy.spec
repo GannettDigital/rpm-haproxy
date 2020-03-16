@@ -6,7 +6,7 @@
 # wget http://haproxy.1wt.eu/download/1.5/src/devel/haproxy-1.5-dev26.tar.gz -O ~/rpmbuild/SOURCES/haproxy-1.5-dev26.tar.gz
 # rpmbuild -bb  ~/rpmbuild/SPECS/haproxy.spec
 
-%define version 1.7.1
+%define version 1.8.24
 %define release 1
 
 Summary: HA-Proxy is a TCP/HTTP reverse proxy for high availability environments
@@ -16,7 +16,7 @@ Release: %{release}%{?dist}.gd
 License: GPL
 Group: System Environment/Daemons
 URL: http://haproxy.1wt.eu/
-Source0: http://www.haproxy.org/download/1.7/src/%{name}-%{version}.tar.gz
+Source0: http://www.haproxy.org/download/1.8/src/%{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: pcre-devel make gcc openssl-devel
 Requires: /sbin/chkconfig, /sbin/service
@@ -54,7 +54,7 @@ cp -R -p ../../SPECS/haproxy.te .
 %define __perl_requires /bin/true
 
 %build
-%{__make} USE_PCRE=1 DEBUG="" ARCH=%{_target_cpu} TARGET=linux26 USE_ZLIB=1 USE_REGPARM=1 USE_PCRE=1  USE_OPENSSL=1 SSL_INC=/tmp/libsslbuild/include SSL_LIB=/tmp/libsslbuild/lib ADDLIB=-ldl
+%{__make} USE_PCRE=1 DEBUG="" ARCH=%{_target_cpu} TARGET=linux26 USE_ZLIB=1 USE_REGPARM=1 USE_PCRE=1  USE_OPENSSL=1 SSL_INC=/tmp/libsslbuild/include SSL_LIB=/tmp/libsslbuild/lib ADDLIB="-ldl -lpthread"
 
 checkmodule -M -m -o haproxy.mod haproxy.te
 semodule_package -o haproxy.pp -m haproxy.mod
@@ -80,7 +80,6 @@ mkdir -p %{buildroot}/etc/systemd/system
 cp contrib/systemd/haproxy.service %{buildroot}/etc/systemd/system
 
 %{__install} -s %{name} %{buildroot}%{_sbindir}/
-%{__install} -s %{name}-systemd-wrapper %{buildroot}%{_sbindir}/
 %{__install} -c -m 755 examples/%{name}.init %{buildroot}%{_sysconfdir}/rc.d/init.d/%{name}
 %{__install} -c -m 755 doc/%{name}.1 %{buildroot}%{_mandir}/man1/
 
@@ -132,7 +131,6 @@ setsebool -P haproxy_connect_any 0
 %doc %{_mandir}/man1/%{name}.1*
 
 %attr(0755,root,root) %{_sbindir}/%{name}
-%attr(0755,root,root) %{_sbindir}/%{name}-systemd-wrapper
 %dir %{_sysconfdir}/%{name}
 %attr(0755,root,root) %config %{_sysconfdir}/rc.d/init.d/%{name}
 
@@ -143,6 +141,9 @@ setsebool -P haproxy_connect_any 0
 %{_datadir}/selinux/packages/haproxy/haproxy.pp
 
 %changelog
+* Mon Mar 16 2020 Dane Thorsen
+- Updated to 1.8.24
+
 * Wed Dec 14 2016 Marcelo Mandolesi
 - Updated to 1.7.1
 
