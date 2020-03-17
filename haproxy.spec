@@ -123,7 +123,7 @@ setsebool -P haproxy_connect_any 0
 %files
 /usr/share/haproxy
 /etc/haproxy/errors/503.http
-/etc/haproxy/haproxy.cfg
+%config(noreplace) /etc/haproxy/haproxy.cfg
 /etc/systemd/system/haproxy.service
 
 %defattr(-,root,root)
