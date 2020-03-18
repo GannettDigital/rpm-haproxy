@@ -54,7 +54,7 @@ cp -R -p ../../SPECS/haproxy.te .
 %define __perl_requires /bin/true
 
 %build
-%{__make} USE_PCRE=1 DEBUG="" ARCH=%{_target_cpu} TARGET=linux26 USE_ZLIB=1 USE_REGPARM=1 USE_PCRE=1  USE_OPENSSL=1 USE_SYSTEMD=1 SSL_INC=/tmp/libsslbuild/include SSL_LIB=/tmp/libsslbuild/lib ADDLIB="-ldl -lpthread"
+%{__make} USE_PCRE=1 DEBUG="" ARCH=%{_target_cpu} TARGET=linux26 USE_THREAD=1 USE_ZLIB=1 USE_REGPARM=1 USE_PCRE=1  USE_OPENSSL=1 USE_SYSTEMD=1 SSL_INC=/tmp/libsslbuild/include SSL_LIB=/tmp/libsslbuild/lib ADDLIB="-ldl -lpthread"
 
 checkmodule -M -m -o haproxy.mod haproxy.te
 semodule_package -o haproxy.pp -m haproxy.mod
